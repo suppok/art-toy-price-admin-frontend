@@ -1,23 +1,16 @@
 import logo from './logo.svg';
+import TodoList from './components/TodoList';
+import { Button, Panel } from 'rsuite';
+import 'rsuite/dist/rsuite.min.css';
 import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Panel header={<h3>RSuite Components</h3>} bordered>
+        <Button appearance="primary">Primary Button</Button>
+        <Button appearance="ghost">Ghost Button</Button>
+      </Panel>
     </div>
   );
 }

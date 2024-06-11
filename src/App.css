@@ -46,3 +46,29 @@
   color: #888;
   text-decoration: line-through;
  }
+
+ .sidenav-container {
+  height: 100vh; /* Full viewport height */
+  display: flex;
+  flex-direction: column;
+}
+
+.rs-sidenav {
+  flex-grow: 1; /* Make the Sidenav grow to fill the container */
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.main-container {
+  display: flex;
+  flex: 1;
+}
+
+.content-container {
+  flex: 1;
+  padding: 20px;
+}

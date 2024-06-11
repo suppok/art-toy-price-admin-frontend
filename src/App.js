@@ -1,17 +1,36 @@
-import logo from './logo.svg';
-import TodoList from './components/TodoList';
-import { Button, Panel } from 'rsuite';
-import 'rsuite/dist/rsuite.min.css';
+import CustomSidenav from './components/CustomSidenav';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Home from './components/Home';
+import Artist from './components/Artist';
+import Series from './components/Series';
+import Collection from './components/Collection';
+import Character from './components/Character';
+import Reseller from './components/Reseller';
+import Sale from './components/Sale';
+import CustomNavbar from './components/CustomNavbar';
 import './App.css';
 
 function App() {
   return (
-    <div>
-      <Panel header={<h3>RSuite Components</h3>} bordered>
-        <Button appearance="primary">Primary Button</Button>
-        <Button appearance="ghost">Ghost Button</Button>
-      </Panel>
-    </div>
+    <Router>
+      <div className="app-container">
+        <CustomNavbar />
+        <div className="main-container">
+          <CustomSidenav />
+          <div className="content-container">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/artist" element={<Artist />} />
+              <Route path="/series" element={<Series />} />
+              <Route path="/collection" element={<Collection />} />
+              <Route path="/character" element={<Character />} />
+              <Route path="/reseller" element={<Reseller />} />
+              <Route path="/sale" element={<Sale />} />
+            </Routes>
+          </div>
+        </div>
+      </div>
+    </Router>
   );
 }
 

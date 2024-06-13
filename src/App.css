@@ -48,6 +48,7 @@
  }
 
  .sidenav-container {
+  width: 240px;
   height: 100vh; /* Full viewport height */
   display: flex;
   flex-direction: column;
@@ -59,16 +60,48 @@
 
 .app-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   height: 100vh;
+  background-color: #F1F0FE;
+  flex: 1;
 }
 
 .main-container {
-  display: flex;
   flex: 1;
 }
 
 .content-container {
   flex: 1;
-  padding: 20px;
+  display: flex;
+  padding: 25px;
+}
+
+.nav-item {
+  background-color: #4f4699 !important;
+  color: white !important;
+}
+
+.clickable-row {
+  cursor: pointer;
+}
+
+.clickable-row:hover {
+  background-color: black !important;
+}
+
+.spacing-20px {
+  margin-bottom: 20px;
+}
+
+.purple-button {
+  background-color: #4f4699 !important;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.right-space {
+  margin-right: 10px;
 }

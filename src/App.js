@@ -2,6 +2,8 @@ import CustomSidenav from './components/CustomSidenav';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './components/Home';
 import Artist from './components/Artist';
+import ArtistPage from './components/ArtistPage';
+import CreateArtistPage from './components/CreateArtistPage';
 import Series from './components/Series';
 import Collection from './components/Collection';
 import Character from './components/Character';
@@ -14,13 +16,15 @@ function App() {
   return (
     <Router>
       <div className="app-container">
-        <CustomNavbar />
+        <CustomSidenav />
         <div className="main-container">
-          <CustomSidenav />
+          {/* <CustomNavbar /> */}
           <div className="content-container">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/artist" element={<Artist />} />
+              <Route path="/artist/:id" element={<ArtistPage />} />
+              <Route path="/create-artist" element={<CreateArtistPage />} />
               <Route path="/series" element={<Series />} />
               <Route path="/collection" element={<Collection />} />
               <Route path="/character" element={<Character />} />

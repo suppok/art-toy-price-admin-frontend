@@ -9,9 +9,15 @@ const CustomNavbar = () => {
     <Navbar>
       <Navbar.Brand href="#">Brand</Navbar.Brand>
       <Nav>
-        <Nav.Item icon={<HomeIcon />} href="#">Home</Nav.Item>
-        <Nav.Item icon={<InfoIcon />} href="#">About</Nav.Item>
-        <Nav.Item icon={<UserIcon />} href="#">Contact</Nav.Item>
+        <Nav.Item icon={<HomeIcon />} href="#">
+          Home
+        </Nav.Item>
+        <Nav.Item icon={<InfoIcon />} href="#">
+          About
+        </Nav.Item>
+        <Nav.Item icon={<UserIcon />} href="#">
+          Contact
+        </Nav.Item>
       </Nav>
       <Nav pullRight>
         <Nav.Item href="#">Login</Nav.Item>

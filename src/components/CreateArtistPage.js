@@ -11,7 +11,7 @@ const model = Schema.Model({
   name: StringType().isRequired('This field is required.'),
 });
 
-const ArtistPage = () => {
+const CreateArtistPage = () => {
   const [formValue, setFormValue] = useState({
     name: '',
   });
@@ -65,4 +65,4 @@ const ArtistPage = () => {
   );
 };
 
-export default ArtistPage;
+export default CreateArtistPage;

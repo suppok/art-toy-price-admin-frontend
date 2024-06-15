@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Button, Schema } from 'rsuite';
+import { Form, Button, Schema, Table, IconButton } from 'rsuite';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import { Table } from 'rsuite';
+import PlusIcon from '@rsuite/icons/legacy/Plus';
 import {
   showSuccessNotification,
   showErrorNotification,
@@ -73,6 +73,10 @@ const ArtistPage = () => {
     navigate(`/series/${rowData.id}`);
   };
 
+  const handleAddSeriesClick = () => {
+    navigate(`/create-series`, { state: { artistId: id}});
+  }
+
   const handleDeleteArtistClick = async () => {
     try {
       const response = await axios.delete(
@@ -127,6 +131,16 @@ const ArtistPage = () => {
           </div>
         </Form>
         <h3 className="spacing-20px">Series</h3>
+        <div className="spacing-20px">
+          <IconButton
+            className="purple-button"
+            appearance="primary"
+            onClick={handleAddSeriesClick}
+            icon={<PlusIcon className="purple-button" />}
+          >
+            Add
+          </IconButton>
+        </div>
         <Table
           data={series}
           width={1500}

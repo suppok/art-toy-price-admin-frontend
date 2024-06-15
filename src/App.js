@@ -11,6 +11,7 @@ import Reseller from './components/Reseller';
 import Sale from './components/Sale';
 import CustomNavbar from './components/CustomNavbar';
 import './App.css';
+import CreateSeriesPage from './components/CreateSeriesPage';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
               <Route path="/artist/:id" element={<ArtistPage />} />
               <Route path="/create-artist" element={<CreateArtistPage />} />
               <Route path="/series" element={<Series />} />
+              <Route path="/create-series" element={<CreateSeriesPage />} />
               <Route path="/collection" element={<Collection />} />
               <Route path="/character" element={<Character />} />
               <Route path="/reseller" element={<Reseller />} />

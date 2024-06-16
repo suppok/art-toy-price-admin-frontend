@@ -1,32 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { Table, IconButton } from 'rsuite';
 import PlusIcon from '@rsuite/icons/legacy/Plus';
-import DateCell from './DateCell';
-import DeleteCell from './DeleteCell';
+import DateCell from '../components/DateCell';
+import DeleteCell from '../components/DeleteCell';
 import {
   showSuccessNotification,
   showErrorNotification,
 } from '../utils/Toaster';
+import { fetchArtists, deleteArtist } from '../services/ArtistService';
 
 const { Column, HeaderCell, Cell } = Table;
 
-const Artist = () => {
-  const [data, setData] = useState([]);
+const AllArtist = () => {
+  const [artistData, setArtistData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          'http://localhost:8080/api/v1/artists'
-        );
-        setData(response.data);
+        const response = await fetchArtists();
+        setArtistData(response.data);
         setIsLoading(false);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        showErrorNotification(`Error fetching artist data: ${error}`);
         setIsLoading(false);
       }
     };
@@ -34,7 +32,7 @@ const Artist = () => {
     fetchData();
   }, []);
 
-  const handleRowClick = (rowData) => {
+  const handleArtistRowClick = (rowData) => {
     navigate(`/artist/${rowData.id}`);
   };
 
@@ -44,12 +42,10 @@ const Artist = () => {
 
   const handleDeleteArtistClick = async (deletedId) => {
     try {
-      const response = await axios.delete(
-        `http://localhost:8080/api/v1/artists/${deletedId}`
-      );
-      if (response.status == 200) {
-        const newData = data.filter((item) => item.id !== deletedId);
-        setData(newData);
+      const response = await deleteArtist(deletedId);
+      if (response.status === 200) {
+        const newArtistData = artistData.filter((item) => item.id !== deletedId);
+        setArtistData(newArtistData);
         showSuccessNotification('Deleted successfully');
       } else {
         showErrorNotification('Failed to delete');
@@ -74,14 +70,14 @@ const Artist = () => {
       </div>
       <div>
         <Table
-          data={data}
+          data={artistData}
           width={2000}
           rowKey="id"
           autoHeight
           affixHeader
           affixHorizontalScrollbar
           loading={isLoading}
-          onRowClick={handleRowClick}
+          onRowClick={handleArtistRowClick}
           rowClassName="clickable-row"
         >
           <Column width={500}>
@@ -106,4 +102,4 @@ const Artist = () => {
   );
 };
 
-export default Artist;
+export default AllArtist;

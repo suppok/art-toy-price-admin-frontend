@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Form, Button, Schema, SelectPicker } from 'rsuite';
 import {
   showSuccessNotification,
   showErrorNotification,
 } from '../utils/Toaster';
+import { createSeries } from '../services/SeriesService';
+import { fetchArtists } from '../services/ArtistService';
 
 const { StringType } = Schema.Types;
 const model = Schema.Model({
@@ -13,56 +14,50 @@ const model = Schema.Model({
   artist: StringType().isRequired('This field is required.'),
 });
 
-const CreateSeriesPage = () => {
-  const [artistData, setData] = useState([]);
+const CreateSeries = () => {
+  const [artistData, setArtistData] = useState([]);
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
-  const [formValue, setFormValue] = useState({
+  const [seriesFormValue, setSeriesFormValue] = useState({
     name: '',
     artist: '',
   });
   const navigate = useNavigate();
-  const handleSubmit = async () => {
-    // Handle form submission to update data
+  const handleFormSubmit = async () => {
+    if (isLoading) {
+      return;
+    }
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/series`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formValue),
-      });
+      const response = await createSeries(seriesFormValue);
       if (response.ok) {
         showSuccessNotification('Created successfully');
-        navigate(`/artist/${formValue.artist}`);
+        navigate(`/artist/${seriesFormValue.artist}`);
       } else {
         showErrorNotification('Failed to create');
       }
     } catch (error) {
-      showErrorNotification('Failed to create');
+      showErrorNotification(`Failed to create: ${error}`);
     }
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          'http://localhost:8080/api/v1/artists'
-        );
-        setData(
+        const response = await fetchArtists();
+        setArtistData(
           response.data.map((artist) => ({
             label: artist.name,
             value: artist.id,
           }))
         );
         const initialArtistId = location.state?.artistId || '';
-        setFormValue((prevValue) => ({
+        setSeriesFormValue((prevValue) => ({
           ...prevValue,
           artist: initialArtistId,
         }));
         setIsLoading(false);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        showErrorNotification(`Error fetching artist data: ${error}`);
         setIsLoading(false);
       }
     };
@@ -77,9 +72,9 @@ const CreateSeriesPage = () => {
         <Form
           fluid
           model={model}
-          formValue={formValue}
-          onChange={setFormValue}
-          onSubmit={handleSubmit}
+          formValue={seriesFormValue}
+          onChange={setSeriesFormValue}
+          onSubmit={handleFormSubmit}
           layout="horizontal"
           className="spacing-20px"
         >
@@ -88,9 +83,9 @@ const CreateSeriesPage = () => {
             <SelectPicker
               data={artistData}
               searchable={true}
-              value={formValue.artist}
+              value={seriesFormValue.artist}
               onChange={(value) =>
-                setFormValue({ ...formValue, artist: value })
+                setSeriesFormValue({ ...seriesFormValue, artist: value })
               }
               style={{ width: 300 }}
               multiple
@@ -115,4 +110,4 @@ const CreateSeriesPage = () => {
   );
 };
 
-export default CreateSeriesPage;
+export default CreateSeries;

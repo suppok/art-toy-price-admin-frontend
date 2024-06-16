@@ -1,30 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { Table, IconButton } from 'rsuite';
 import PlusIcon from '@rsuite/icons/legacy/Plus';
-import DateCell from './DateCell';
-import DeleteCell from './DeleteCell';
+import DateCell from '../components/DateCell';
+import DeleteCell from '../components/DeleteCell';
 import {
   showSuccessNotification,
   showErrorNotification,
 } from '../utils/Toaster';
+import { deleteSeries, fetchSeriesList } from '../services/SeriesService';
 
 const { Column, HeaderCell, Cell } = Table;
 
-const Series = () => {
-  const [data, setData] = useState([]);
+const AllSeries = () => {
+  const [seriesData, setSeriesData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/v1/series');
-        setData(response.data);
+        const response = await fetchSeriesList();
+        setSeriesData(response.data);
         setIsLoading(false);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        showErrorNotification(`Error fetching series: ${error}`);
         setIsLoading(false);
       }
     };
@@ -32,7 +32,7 @@ const Series = () => {
     fetchData();
   }, []);
 
-  const handleRowClick = (rowData) => {
+  const handleSeriesRowClick = (rowData) => {
     navigate(`/series/${rowData.id}`);
   };
 
@@ -42,18 +42,16 @@ const Series = () => {
 
   const handleDeleteSeriesClick = async (deletedId) => {
     try {
-      const response = await axios.delete(
-        `http://localhost:8080/api/v1/series/${deletedId}`
-      );
-      if (response.status == 200) {
-        const newData = data.filter((item) => item.id !== deletedId);
-        setData(newData);
+      const response = await deleteSeries(deletedId);
+      if (response.status === 200) {
+        const newData = seriesData.filter((item) => item.id !== deletedId);
+        setSeriesData(newData);
         showSuccessNotification('Deleted successfully');
       } else {
         showErrorNotification('Failed to delete');
       }
     } catch (error) {
-      showErrorNotification('Failed to delete');
+      showErrorNotification(`Failed to delete: ${error}`);
     }
   };
 
@@ -72,14 +70,14 @@ const Series = () => {
       </div>
       <div>
         <Table
-          data={data}
+          data={seriesData}
           width={2000}
           rowKey="id"
           autoHeight
           affixHeader
           affixHorizontalScrollbar
           loading={isLoading}
-          onRowClick={handleRowClick}
+          onRowClick={handleSeriesRowClick}
           rowClassName="clickable-row"
         >
           <Column width={300}>
@@ -108,4 +106,4 @@ const Series = () => {
   );
 };
 
-export default Series;
+export default AllSeries;

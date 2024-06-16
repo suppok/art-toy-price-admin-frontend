@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Collection = () => {
+const AllCollection = () => {
   return (
     <div>
       <h2>Collection Page</h2>
@@ -8,4 +8,4 @@ const Collection = () => {
   );
 };
 
-export default Collection;
+export default AllCollection;

@@ -36,3 +36,72 @@
     transform: rotate(360deg);
   }
 }
+
+.todo-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+ }
+ .todo-item p {
+  color: #888;
+  text-decoration: line-through;
+ }
+
+ .sidenav-container {
+  width: 240px;
+  height: 100vh; /* Full viewport height */
+  display: flex;
+  flex-direction: column;
+}
+
+.rs-sidenav {
+  flex-grow: 1; /* Make the Sidenav grow to fill the container */
+}
+
+.app-container {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  background-color: #F1F0FE;
+  flex: 1;
+}
+
+.main-container {
+  flex: 1;
+}
+
+.content-container {
+  flex: 1;
+  display: flex;
+  padding: 25px;
+}
+
+.nav-item {
+  background-color: #4f4699 !important;
+  color: white !important;
+}
+
+.clickable-row {
+  cursor: pointer;
+}
+
+.clickable-row:hover {
+  background-color: black !important;
+}
+
+.spacing-20px {
+  margin-bottom: 20px;
+}
+
+.purple-button {
+  background-color: #4f4699 !important;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.right-space {
+  margin-right: 10px;
+}

@@ -17,10 +17,10 @@ const model = Schema.Model({
   name: StringType().isRequired('This field is required.'),
 });
 
-const ArtistPage = () => {
+const SeriesPage = () => {
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState(true);
-  const [series, setSeries] = useState([]);
+  const [collections, setCollections] = useState([]);
   const [formValue, setFormValue] = useState({
     name: '',
   });
@@ -30,13 +30,16 @@ const ArtistPage = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/v1/artists/${id}`
+          `http://localhost:8080/api/v1/series/${id}`
         );
         setFormValue(response.data);
         const response2 = await axios.get(
-          `http://localhost:8080/api/v1/artists/${id}/series`
+          `http://localhost:8080/api/v1/series/${id}/collections`
         );
-        setSeries(response2.data);
+
+        //TODO get artist name
+
+        setCollections(response2.data);
         setIsLoading(false);
       } catch (error) {
         showErrorNotification('Failed to fetch data');
@@ -51,7 +54,7 @@ const ArtistPage = () => {
     // Handle form submission to update data
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/artists/${id}`,
+        `http://localhost:8080/api/v1/series/${id}`,
         {
           method: 'PUT',
           headers: {
@@ -71,21 +74,21 @@ const ArtistPage = () => {
   };
 
   const handleRowClick = (rowData) => {
-    navigate(`/series/${rowData.id}`);
+    navigate(`/collections/${rowData.id}`);
   };
 
-  const handleAddSeriesClick = () => {
-    navigate(`/create-series`, { state: { artistId: id } });
+  const handleAddCollectionClick = () => {
+    navigate(`/create-collection`, { state: { series: id } });
   };
 
-  const handleDeleteArtistClick = async () => {
+  const handleDeleteSeriesClick = async () => {
     try {
       const response = await axios.delete(
-        `http://localhost:8080/api/v1/artists/${id}`
+        `http://localhost:8080/api/v1/series/${id}`
       );
       if (response.status == 200) {
         showSuccessNotification('Deleted successfully');
-        navigate(`/artist`);
+        navigate(`/series`);
       } else {
         showErrorNotification('Failed to delete');
       }
@@ -94,14 +97,14 @@ const ArtistPage = () => {
     }
   };
 
-  const handleDeleteSeriesClick = async (deletedId) => {
+  const handleDeleteCollectionClick = async (deletedId) => {
     try {
       const response = await axios.delete(
-        `http://localhost:8080/api/v1/series/${deletedId}`
+        `http://localhost:8080/api/v1/collections/${deletedId}`
       );
       if (response.status == 200) {
-        const newSeriesData = series.filter((item) => item.id !== deletedId);
-        setSeries(newSeriesData);
+        const newCollectionData = collections.filter((item) => item.id !== deletedId);
+        setCollections(newCollectionData);
         showSuccessNotification('Deleted successfully');
       } else {
         showErrorNotification('Failed to delete');
@@ -113,7 +116,7 @@ const ArtistPage = () => {
 
   return (
     <div>
-      <h2 className="spacing-20px">Update Artist</h2>
+      <h2 className="spacing-20px">Update Series</h2>
       <div>
         <Form
           fluid
@@ -128,6 +131,10 @@ const ArtistPage = () => {
             <Form.ControlLabel>Name</Form.ControlLabel>
             <Form.Control name="name" />
           </Form.Group>
+          <Form.Group>
+            <Form.ControlLabel>Artist</Form.ControlLabel>
+            <Form.Control name="artist" />
+          </Form.Group>
           <div class="row">
             <Form.Group>
               <Button
@@ -138,7 +145,7 @@ const ArtistPage = () => {
                 Update
               </Button>
               <Button
-                onClick={handleDeleteArtistClick}
+                onClick={handleDeleteSeriesClick}
                 appearance="primary"
                 color="red"
                 className="right-space"
@@ -148,19 +155,19 @@ const ArtistPage = () => {
             </Form.Group>
           </div>
         </Form>
-        <h3 className="spacing-20px">Series</h3>
+        <h3 className="spacing-20px">Collections</h3>
         <div className="spacing-20px">
           <IconButton
             className="purple-button"
             appearance="primary"
-            onClick={handleAddSeriesClick}
+            onClick={handleAddCollectionClick}
             icon={<PlusIcon className="purple-button" />}
           >
             Add
           </IconButton>
         </div>
         <Table
-          data={series}
+          data={collections}
           width={1500}
           rowKey="id"
           autoHeight
@@ -185,7 +192,7 @@ const ArtistPage = () => {
           </Column>
           <Column width={200}>
             <HeaderCell>Actions</HeaderCell>
-            <DeleteCell dataKey="id" onDelete={handleDeleteSeriesClick} />
+            <DeleteCell dataKey="id" onDelete={handleDeleteCollectionClick} />
           </Column>
         </Table>
       </div>
@@ -193,4 +200,4 @@ const ArtistPage = () => {
   );
 };
 
-export default ArtistPage;
+export default SeriesPage;

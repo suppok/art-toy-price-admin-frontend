@@ -5,13 +5,14 @@ import {
   showSuccessNotification,
   showErrorNotification,
 } from '../utils/Toaster';
+import { createArtist } from '../services/ArtistService';
 
 const { StringType } = Schema.Types;
 const model = Schema.Model({
   name: StringType().isRequired('This field is required.'),
 });
 
-const CreateArtistPage = () => {
+const CreateArtist = () => {
   const [formValue, setFormValue] = useState({
     name: '',
   });
@@ -19,13 +20,7 @@ const CreateArtistPage = () => {
   const handleSubmit = async () => {
     // Handle form submission to update data
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/artists`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formValue),
-      });
+      const response = await createArtist(formValue);
       if (response.ok) {
         showSuccessNotification('Created successfully');
         navigate(`/artist`);
@@ -33,7 +28,7 @@ const CreateArtistPage = () => {
         showErrorNotification('Failed to create');
       }
     } catch (error) {
-      showErrorNotification('Failed to create');
+      showErrorNotification(`Failed to create: ${error}`);
     }
   };
 
@@ -65,4 +60,4 @@ const CreateArtistPage = () => {
   );
 };
 
-export default CreateArtistPage;
+export default CreateArtist;

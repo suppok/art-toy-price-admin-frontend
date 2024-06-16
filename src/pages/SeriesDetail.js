@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button, Schema, Table, IconButton } from 'rsuite';
-import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import PlusIcon from '@rsuite/icons/legacy/Plus';
 import {
   showSuccessNotification,
   showErrorNotification,
 } from '../utils/Toaster';
-import DateCell from './DateCell';
-import DeleteCell from './DeleteCell';
+import DateCell from '../components/DateCell';
+import DeleteCell from '../components/DeleteCell';
+import { deleteSeries, fetchSeries, updateSeries } from '../services/SeriesService';
+import { deleteCollection, fetchCollections } from '../services/CollectionService';
 
 const { Column, HeaderCell, Cell } = Table;
 const { StringType } = Schema.Types;
@@ -17,11 +18,11 @@ const model = Schema.Model({
   name: StringType().isRequired('This field is required.'),
 });
 
-const SeriesPage = () => {
+const SeriesDetail = () => {
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState(true);
   const [collections, setCollections] = useState([]);
-  const [formValue, setFormValue] = useState({
+  const [seriesFormValue, setSeriesFormValue] = useState({
     name: '',
   });
   const navigate = useNavigate();
@@ -29,20 +30,16 @@ const SeriesPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8080/api/v1/series/${id}`
-        );
-        setFormValue(response.data);
-        const response2 = await axios.get(
-          `http://localhost:8080/api/v1/series/${id}/collections`
-        );
+        const response = await fetchSeries(id);
 
         //TODO get artist name
 
+        setSeriesFormValue(response.data);
+        const response2 = await fetchCollections();
         setCollections(response2.data);
         setIsLoading(false);
       } catch (error) {
-        showErrorNotification('Failed to fetch data');
+        showErrorNotification(`Failed to fetch data: ${error}`);
         setIsLoading(false);
       }
     };
@@ -50,30 +47,20 @@ const SeriesPage = () => {
     fetchData();
   }, []);
 
-  const handleSubmit = async () => {
-    // Handle form submission to update data
+  const handleFormSubmit = async () => {
     try {
-      const response = await fetch(
-        `http://localhost:8080/api/v1/series/${id}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formValue),
-        }
-      );
+      const response = await updateSeries(id, seriesFormValue);
       if (response.ok) {
         showSuccessNotification('Data updated successfully');
       } else {
         showErrorNotification('Failed to update data');
       }
     } catch (error) {
-      showErrorNotification('Failed to update data');
+      showErrorNotification(`Failed to update series: ${error}`);
     }
   };
 
-  const handleRowClick = (rowData) => {
+  const handleCollectionRowClick = (rowData) => {
     navigate(`/collections/${rowData.id}`);
   };
 
@@ -83,26 +70,22 @@ const SeriesPage = () => {
 
   const handleDeleteSeriesClick = async () => {
     try {
-      const response = await axios.delete(
-        `http://localhost:8080/api/v1/series/${id}`
-      );
-      if (response.status == 200) {
+      const response = await deleteSeries(id);
+      if (response.status === 200) {
         showSuccessNotification('Deleted successfully');
         navigate(`/series`);
       } else {
         showErrorNotification('Failed to delete');
       }
     } catch (error) {
-      showErrorNotification('Failed to delete');
+      showErrorNotification(`Failed to delete series: ${error}`);
     }
   };
 
   const handleDeleteCollectionClick = async (deletedId) => {
     try {
-      const response = await axios.delete(
-        `http://localhost:8080/api/v1/collections/${deletedId}`
-      );
-      if (response.status == 200) {
+      const response = await deleteCollection(deletedId);
+      if (response.status === 200) {
         const newCollectionData = collections.filter((item) => item.id !== deletedId);
         setCollections(newCollectionData);
         showSuccessNotification('Deleted successfully');
@@ -110,7 +93,7 @@ const SeriesPage = () => {
         showErrorNotification('Failed to delete');
       }
     } catch (error) {
-      showErrorNotification('Failed to delete');
+      showErrorNotification(`Failed to delete: ${error}`);
     }
   };
 
@@ -121,9 +104,9 @@ const SeriesPage = () => {
         <Form
           fluid
           model={model}
-          formValue={formValue}
-          onChange={setFormValue}
-          onSubmit={handleSubmit}
+          formValue={seriesFormValue}
+          onChange={setSeriesFormValue}
+          onSubmit={handleFormSubmit}
           layout="horizontal"
           className="spacing-20px"
         >
@@ -174,7 +157,7 @@ const SeriesPage = () => {
           affixHeader
           affixHorizontalScrollbar
           loading={isLoading}
-          onRowClick={handleRowClick}
+          onRowClick={handleCollectionRowClick}
           rowClassName="clickable-row"
           className="spacing-20px"
         >
@@ -200,4 +183,4 @@ const SeriesPage = () => {
   );
 };
 
-export default SeriesPage;
+export default SeriesDetail;

@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button, Schema, Table, IconButton } from 'rsuite';
-import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import PlusIcon from '@rsuite/icons/legacy/Plus';
 import {
   showSuccessNotification,
   showErrorNotification,
 } from '../utils/Toaster';
-import DateCell from './DateCell';
-import DeleteCell from './DeleteCell';
+import DateCell from '../components/DateCell';
+import DeleteCell from '../components/DeleteCell';
+import { fetchArtist, updateArtist, deleteArtist } from '../services/ArtistService';
+import { deleteSeries, fetchSeriesByArtist } from '../services/SeriesService';
 
 const { Column, HeaderCell, Cell } = Table;
 const { StringType } = Schema.Types;
@@ -17,11 +18,11 @@ const model = Schema.Model({
   name: StringType().isRequired('This field is required.'),
 });
 
-const ArtistPage = () => {
+const ArtistDetail = () => {
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState(true);
   const [series, setSeries] = useState([]);
-  const [formValue, setFormValue] = useState({
+  const [artistFormValue, setArtistFormValue] = useState({
     name: '',
   });
   const navigate = useNavigate();
@@ -29,17 +30,13 @@ const ArtistPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8080/api/v1/artists/${id}`
-        );
-        setFormValue(response.data);
-        const response2 = await axios.get(
-          `http://localhost:8080/api/v1/artists/${id}/series`
-        );
-        setSeries(response2.data);
+        const artistResponse = await fetchArtist(id);
+        setArtistFormValue(artistResponse.data);
+        const seriesResponse = await fetchSeriesByArtist(id);
+        setSeries(seriesResponse.data);
         setIsLoading(false);
       } catch (error) {
-        showErrorNotification('Failed to fetch data');
+        showErrorNotification(`Failed to fetch artist: ${error}`);
         setIsLoading(false);
       }
     };
@@ -47,30 +44,20 @@ const ArtistPage = () => {
     fetchData();
   }, []);
 
-  const handleSubmit = async () => {
-    // Handle form submission to update data
+  const handleFormSubmit = async () => {
     try {
-      const response = await fetch(
-        `http://localhost:8080/api/v1/artists/${id}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formValue),
-        }
-      );
+      const response = await updateArtist(id, artistFormValue);
       if (response.ok) {
         showSuccessNotification('Data updated successfully');
       } else {
         showErrorNotification('Failed to update data');
       }
     } catch (error) {
-      showErrorNotification('Failed to update data');
+      showErrorNotification(`Failed to update data: ${error}`);
     }
   };
 
-  const handleRowClick = (rowData) => {
+  const handleSeriesRowClick = (rowData) => {
     navigate(`/series/${rowData.id}`);
   };
 
@@ -80,26 +67,22 @@ const ArtistPage = () => {
 
   const handleDeleteArtistClick = async () => {
     try {
-      const response = await axios.delete(
-        `http://localhost:8080/api/v1/artists/${id}`
-      );
-      if (response.status == 200) {
+      const response = await deleteArtist(id);
+      if (response.status === 200) {
         showSuccessNotification('Deleted successfully');
         navigate(`/artist`);
       } else {
         showErrorNotification('Failed to delete');
       }
     } catch (error) {
-      showErrorNotification('Failed to delete');
+      showErrorNotification(`Failed to delete: ${error}`);
     }
   };
 
   const handleDeleteSeriesClick = async (deletedId) => {
     try {
-      const response = await axios.delete(
-        `http://localhost:8080/api/v1/series/${deletedId}`
-      );
-      if (response.status == 200) {
+      const response = await deleteSeries(deletedId);
+      if (response.status === 200) {
         const newSeriesData = series.filter((item) => item.id !== deletedId);
         setSeries(newSeriesData);
         showSuccessNotification('Deleted successfully');
@@ -107,7 +90,7 @@ const ArtistPage = () => {
         showErrorNotification('Failed to delete');
       }
     } catch (error) {
-      showErrorNotification('Failed to delete');
+      showErrorNotification(`Failed to delete: ${error}`);
     }
   };
 
@@ -118,9 +101,9 @@ const ArtistPage = () => {
         <Form
           fluid
           model={model}
-          formValue={formValue}
-          onChange={setFormValue}
-          onSubmit={handleSubmit}
+          formValue={artistFormValue}
+          onChange={setArtistFormValue}
+          onSubmit={handleFormSubmit}
           layout="horizontal"
           className="spacing-20px"
         >
@@ -167,7 +150,7 @@ const ArtistPage = () => {
           affixHeader
           affixHorizontalScrollbar
           loading={isLoading}
-          onRowClick={handleRowClick}
+          onRowClick={handleSeriesRowClick}
           rowClassName="clickable-row"
           className="spacing-20px"
         >
@@ -193,4 +176,4 @@ const ArtistPage = () => {
   );
 };
 
-export default ArtistPage;
+export default ArtistDetail;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Button, Schema, Table, IconButton } from 'rsuite';
+import { Form, Button, Schema, Table, IconButton, SelectPicker } from 'rsuite';
 import { useParams } from 'react-router-dom';
 import PlusIcon from '@rsuite/icons/legacy/Plus';
 import {
@@ -11,32 +11,44 @@ import DateCell from '../components/DateCell';
 import DeleteCell from '../components/DeleteCell';
 import { deleteSeries, fetchSeries, updateSeries } from '../services/SeriesService';
 import { deleteCollection, fetchCollections } from '../services/CollectionService';
+import { fetchArtists } from '../services/ArtistService';
 
 const { Column, HeaderCell, Cell } = Table;
 const { StringType } = Schema.Types;
 const model = Schema.Model({
   name: StringType().isRequired('This field is required.'),
+  artist: StringType().isRequired('This field is required.'),
 });
 
 const SeriesDetail = () => {
   const { id } = useParams();
+  const [artistData, setArtistData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [collections, setCollections] = useState([]);
   const [seriesFormValue, setSeriesFormValue] = useState({
     name: '',
+    artist: '',
   });
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetchSeries(id);
-
-        //TODO get artist name
-
-        setSeriesFormValue(response.data);
-        const response2 = await fetchCollections();
-        setCollections(response2.data);
+        const seriesResponse = await fetchSeries(id);
+        setSeriesFormValue(seriesResponse.data);
+        const artistResponse = await fetchArtists();
+        setArtistData(
+          artistResponse.data.map((artist) => ({
+            label: artist.name,
+            value: artist.id,
+          }))
+        );
+        setSeriesFormValue((prevValue) => ({
+          ...prevValue,
+          artist: seriesResponse.data.artist,
+        }));
+        const collectionResponse = await fetchCollections();
+        setCollections(collectionResponse.data);
         setIsLoading(false);
       } catch (error) {
         showErrorNotification(`Failed to fetch data: ${error}`);
@@ -116,7 +128,17 @@ const SeriesDetail = () => {
           </Form.Group>
           <Form.Group>
             <Form.ControlLabel>Artist</Form.ControlLabel>
-            <Form.Control name="artist" />
+            <SelectPicker
+              data={artistData}
+              searchable={true}
+              value={seriesFormValue.artist}
+              onChange={(value) =>
+                setSeriesFormValue({ ...seriesFormValue, artist: value })
+              }
+              style={{ width: 300 }}
+              multiple
+              disabled
+            />
           </Form.Group>
           <div class="row">
             <Form.Group>

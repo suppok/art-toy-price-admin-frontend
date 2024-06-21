@@ -44,7 +44,9 @@ const AllArtist = () => {
     try {
       const response = await deleteArtist(deletedId);
       if (response.status === 200) {
-        const newArtistData = artistData.filter((item) => item.id !== deletedId);
+        const newArtistData = artistData.filter(
+          (item) => item.id !== deletedId
+        );
         setArtistData(newArtistData);
         showSuccessNotification('Deleted successfully');
       } else {

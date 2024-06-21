@@ -9,7 +9,11 @@ import {
 } from '../utils/Toaster';
 import DateCell from '../components/DateCell';
 import DeleteCell from '../components/DeleteCell';
-import { fetchArtist, updateArtist, deleteArtist } from '../services/ArtistService';
+import {
+  fetchArtist,
+  updateArtist,
+  deleteArtist,
+} from '../services/ArtistService';
 import { deleteSeries, fetchSeriesByArtist } from '../services/SeriesService';
 
 const { Column, HeaderCell, Cell } = Table;

@@ -22,13 +22,13 @@ export const fetchArtist = async (id) => {
 
 export const deleteArtist = async (id) => {
   try {
-    const response = await axiosInstance.delete(`/artists/${id}`)
+    const response = await axiosInstance.delete(`/artists/${id}`);
     return response;
   } catch (error) {
     console.error(`Error deleting artist: ${error}`);
     throw error;
   }
-}
+};
 
 export const createArtist = async (artistData) => {
   try {
@@ -48,4 +48,4 @@ export const updateArtist = async (id, artistData) => {
     console.error(`Error updating artist: ${error}`);
     throw error;
   }
-}
+};

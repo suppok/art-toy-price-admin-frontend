@@ -12,10 +12,10 @@ export const fetchCollections = async () => {
 
 export const deleteCollection = async (id) => {
   try {
-    const response = await axiosInstance.delete(`/collections/${id}`)
+    const response = await axiosInstance.delete(`/collections/${id}`);
     return response;
   } catch (error) {
     console.error(`Error deleting collection: ${error}`);
     throw error;
   }
-}
+};

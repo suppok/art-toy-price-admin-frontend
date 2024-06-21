@@ -9,8 +9,15 @@ import {
 } from '../utils/Toaster';
 import DateCell from '../components/DateCell';
 import DeleteCell from '../components/DeleteCell';
-import { deleteSeries, fetchSeries, updateSeries } from '../services/SeriesService';
-import { deleteCollection, fetchCollections } from '../services/CollectionService';
+import {
+  deleteSeries,
+  fetchSeries,
+  updateSeries,
+} from '../services/SeriesService';
+import {
+  deleteCollection,
+  fetchCollections,
+} from '../services/CollectionService';
 import { fetchArtists } from '../services/ArtistService';
 
 const { Column, HeaderCell, Cell } = Table;
@@ -98,7 +105,9 @@ const SeriesDetail = () => {
     try {
       const response = await deleteCollection(deletedId);
       if (response.status === 200) {
-        const newCollectionData = collections.filter((item) => item.id !== deletedId);
+        const newCollectionData = collections.filter(
+          (item) => item.id !== deletedId
+        );
         setCollections(newCollectionData);
         showSuccessNotification('Deleted successfully');
       } else {

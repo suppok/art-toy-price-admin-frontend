@@ -58,4 +58,4 @@ export const updateSeries = async (id, seriesData) => {
     console.error(`Error updating series: ${error}`);
     throw error;
   }
-}
+};

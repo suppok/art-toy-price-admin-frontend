@@ -50,7 +50,7 @@ const SeriesDetail = () => {
   const handleFormSubmit = async () => {
     try {
       const response = await updateSeries(id, seriesFormValue);
-      if (response.ok) {
+      if (response.status === 200) {
         showSuccessNotification('Data updated successfully');
       } else {
         showErrorNotification('Failed to update data');

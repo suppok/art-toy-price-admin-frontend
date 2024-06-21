@@ -29,7 +29,7 @@ const CreateSeries = () => {
     }
     try {
       const response = await createSeries(seriesFormValue);
-      if (response.ok) {
+      if (response.status === 200) {
         showSuccessNotification('Created successfully');
         navigate(`/artist/${seriesFormValue.artist}`);
       } else {

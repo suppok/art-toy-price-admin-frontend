@@ -21,7 +21,7 @@ const CreateArtist = () => {
     // Handle form submission to update data
     try {
       const response = await createArtist(formValue);
-      if (response.ok) {
+      if (response.status === 200) {
         showSuccessNotification('Created successfully');
         navigate(`/artist`);
       } else {

@@ -47,7 +47,7 @@ const ArtistDetail = () => {
   const handleFormSubmit = async () => {
     try {
       const response = await updateArtist(id, artistFormValue);
-      if (response.ok) {
+      if (response.status === 200) {
         showSuccessNotification('Data updated successfully');
       } else {
         showErrorNotification('Failed to update data');

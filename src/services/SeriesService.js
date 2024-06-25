@@ -59,3 +59,15 @@ export const updateSeries = async (id, seriesData) => {
     throw error;
   }
 };
+
+export const fetchSeriesNames = async (uuidsParam) => {
+  try {
+    const response = await axiosInstance.get(
+      `/series/names?${uuidsParam.toString()}`
+    );
+    return response;
+  } catch (error) {
+    console.error(`Error fetching series: ${error}`);
+    throw error;
+  }
+};

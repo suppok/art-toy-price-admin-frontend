@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Button, Schema, Table, IconButton, SelectPicker } from 'rsuite';
+import {
+  Form,
+  Button,
+  Schema,
+  Table,
+  IconButton,
+  SelectPicker,
+  Checkbox,
+} from 'rsuite';
 import { useParams } from 'react-router-dom';
 import PlusIcon from '@rsuite/icons/legacy/Plus';
 import {
@@ -9,40 +17,41 @@ import {
 } from '../utils/Toaster';
 import DateCell from '../components/DateCell';
 import DeleteCell from '../components/DeleteCell';
-import {
-  deleteSeries,
-  fetchSeries,
-  updateSeries,
-} from '../services/SeriesService';
+import { fetchSeries, fetchSeriesByArtist } from '../services/SeriesService';
 import {
   deleteCollection,
-  fetchCollectionsBySeries,
+  fetchCollection,
+  updateCollection,
 } from '../services/CollectionService';
 import { fetchArtists } from '../services/ArtistService';
+import { deleteItem, fetchItemsByCollection } from '../services/ItemService';
 
 const { Column, HeaderCell, Cell } = Table;
 const { StringType } = Schema.Types;
 const model = Schema.Model({
   name: StringType().isRequired('This field is required.'),
   artist: StringType().isRequired('This field is required.'),
+  series: StringType().isRequired('This field is required.'),
 });
 
-const SeriesDetail = () => {
+const CollectionDetail = () => {
   const { id } = useParams();
   const [artistData, setArtistData] = useState([]);
+  const [seriesData, setSeriesData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [collections, setCollections] = useState([]);
-  const [seriesFormValue, setSeriesFormValue] = useState({
+  const [items, setItems] = useState([]);
+  const [collectionFormValue, setCollectionFormValue] = useState({
     name: '',
     artist: '',
+    series: '',
   });
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const seriesResponse = await fetchSeries(id);
-        setSeriesFormValue(seriesResponse.data);
+        const collectionResponse = await fetchCollection(id);
+        setCollectionFormValue(collectionResponse.data);
         const artistResponse = await fetchArtists();
         setArtistData(
           artistResponse.data.map((artist) => ({
@@ -50,12 +59,25 @@ const SeriesDetail = () => {
             value: artist.id,
           }))
         );
-        setSeriesFormValue((prevValue) => ({
+        const seriesResponse = await fetchSeries(
+          collectionResponse.data.series
+        );
+        const seriesListResponse = await fetchSeriesByArtist(
+          seriesResponse.data.artist
+        );
+        setSeriesData(
+          seriesListResponse.data.map((series) => ({
+            label: series.name,
+            value: series.id,
+          }))
+        );
+        setCollectionFormValue((prevValue) => ({
           ...prevValue,
           artist: seriesResponse.data.artist,
+          series: collectionResponse.data.series,
         }));
-        const collectionsResponse = await fetchCollectionsBySeries(id);
-        setCollections(collectionsResponse.data);
+        const itemResponse = await fetchItemsByCollection(id);
+        setItems(itemResponse.data);
         setIsLoading(false);
       } catch (error) {
         showErrorNotification(`Failed to fetch data: ${error}`);
@@ -68,47 +90,45 @@ const SeriesDetail = () => {
 
   const handleFormSubmit = async () => {
     try {
-      const response = await updateSeries(id, seriesFormValue);
+      const response = await updateCollection(id, collectionFormValue);
       if (response.status === 200) {
         showSuccessNotification('Data updated successfully');
       } else {
         showErrorNotification('Failed to update data');
       }
     } catch (error) {
-      showErrorNotification(`Failed to update series: ${error}`);
+      showErrorNotification(`Failed to update collection: ${error}`);
     }
   };
 
-  const handleCollectionRowClick = (rowData) => {
-    navigate(`/collection/${rowData.id}`);
+  const handleItemRowClick = (rowData) => {
+    navigate(`/item/${rowData.id}`);
   };
 
-  const handleAddCollectionClick = () => {
-    navigate(`/create-collection`, { state: { seriesId: id } });
+  const handleAddItemClick = () => {
+    navigate(`/create-item`, { state: { collectionId: id } });
   };
 
-  const handleDeleteSeriesClick = async () => {
+  const handleDeleteCollectionClick = async () => {
     try {
-      const response = await deleteSeries(id);
+      const response = await deleteCollection(id);
       if (response.status === 200) {
         showSuccessNotification('Deleted successfully');
-        navigate(`/series`);
+        navigate(`/collection`);
       } else {
         showErrorNotification('Failed to delete');
       }
     } catch (error) {
-      showErrorNotification(`Failed to delete series: ${error}`);
+      showErrorNotification(`Failed to delete collection: ${error}`);
     }
   };
 
-  const handleDeleteCollectionClick = async (deletedId) => {
+  const handleDeleteItemClick = async (deletedId) => {
     try {
-      const response = await deleteCollection(deletedId);
+      const response = await deleteItem(deletedId);
       if (response.status === 200) {
-        const newCollectionData = collections.filter(
-          (item) => item.id !== deletedId
-        );
-        setCollections(newCollectionData);
+        const newItemData = items.filter((item) => item.id !== deletedId);
+        setItems(newItemData);
         showSuccessNotification('Deleted successfully');
       } else {
         showErrorNotification('Failed to delete');
@@ -120,13 +140,13 @@ const SeriesDetail = () => {
 
   return (
     <div>
-      <h2 className="spacing-20px">Series Data</h2>
+      <h2 className="spacing-20px">Collection Data</h2>
       <div>
         <Form
           fluid
           model={model}
-          formValue={seriesFormValue}
-          onChange={setSeriesFormValue}
+          formValue={collectionFormValue}
+          onChange={setCollectionFormValue}
           onSubmit={handleFormSubmit}
           layout="horizontal"
           className="spacing-20px"
@@ -139,13 +159,29 @@ const SeriesDetail = () => {
             <Form.ControlLabel>Artist</Form.ControlLabel>
             <SelectPicker
               data={artistData}
-              searchable={true}
-              value={seriesFormValue.artist}
+              value={collectionFormValue.artist}
               onChange={(value) =>
-                setSeriesFormValue({ ...seriesFormValue, artist: value })
+                setCollectionFormValue({
+                  ...collectionFormValue,
+                  artist: value,
+                })
               }
               style={{ width: 300 }}
-              multiple
+              disabled
+            />
+          </Form.Group>
+          <Form.Group>
+            <Form.ControlLabel>Series</Form.ControlLabel>
+            <SelectPicker
+              data={seriesData}
+              value={collectionFormValue.series}
+              onChange={(value) =>
+                setCollectionFormValue({
+                  ...collectionFormValue,
+                  series: value,
+                })
+              }
+              style={{ width: 300 }}
               disabled
             />
           </Form.Group>
@@ -159,7 +195,7 @@ const SeriesDetail = () => {
                 Update
               </Button>
               <Button
-                onClick={handleDeleteSeriesClick}
+                onClick={handleDeleteCollectionClick}
                 appearance="primary"
                 color="red"
                 className="right-space"
@@ -169,26 +205,26 @@ const SeriesDetail = () => {
             </Form.Group>
           </div>
         </Form>
-        <h3 className="spacing-20px">Collections</h3>
+        <h3 className="spacing-20px">Items</h3>
         <div className="spacing-20px">
           <IconButton
             className="purple-button"
             appearance="primary"
-            onClick={handleAddCollectionClick}
+            onClick={handleAddItemClick}
             icon={<PlusIcon className="purple-button" />}
           >
             Add
           </IconButton>
         </div>
         <Table
-          data={collections}
-          width={1500}
+          data={items}
+          width={2000}
           rowKey="id"
           autoHeight
           affixHeader
           affixHorizontalScrollbar
           loading={isLoading}
-          onRowClick={handleCollectionRowClick}
+          onRowClick={handleItemRowClick}
           rowClassName="clickable-row"
           className="spacing-20px"
         >
@@ -200,13 +236,23 @@ const SeriesDetail = () => {
             <HeaderCell>Name</HeaderCell>
             <Cell dataKey="name" />
           </Column>
+          <Column width={300}>
+            <HeaderCell>Official Price</HeaderCell>
+            <Cell dataKey="officialPrice" />
+          </Column>
+          <Column width={200}>
+            <HeaderCell>Secret</HeaderCell>
+            <Cell dataKey="isSecret">
+              <Checkbox />
+            </Cell>
+          </Column>
           <Column width={500}>
             <HeaderCell>Create At</HeaderCell>
             <DateCell dataKey="createAt" />
           </Column>
           <Column width={200}>
             <HeaderCell>Actions</HeaderCell>
-            <DeleteCell dataKey="id" onDelete={handleDeleteCollectionClick} />
+            <DeleteCell dataKey="id" onDelete={handleDeleteItemClick} />
           </Column>
         </Table>
       </div>
@@ -214,4 +260,4 @@ const SeriesDetail = () => {
   );
 };
 
-export default SeriesDetail;
+export default CollectionDetail;

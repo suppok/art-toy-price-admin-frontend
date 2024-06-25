@@ -9,6 +9,7 @@ import {
   showErrorNotification,
 } from '../utils/Toaster';
 import { deleteSeries, fetchSeriesList } from '../services/SeriesService';
+import { fetchArtistNames } from '../services/ArtistService';
 
 const { Column, HeaderCell, Cell } = Table;
 
@@ -21,7 +22,15 @@ const AllSeries = () => {
     const fetchData = async () => {
       try {
         const response = await fetchSeriesList();
-        setSeriesData(response.data);
+        const params = new URLSearchParams();
+        const artistIdList = response.data.map((series) => series.artist);
+        artistIdList.forEach((uuid) => params.append('uuids', uuid));
+        const artistResponse = await fetchArtistNames(params);
+        const seriesList = response.data;
+        for (let i = 0; i < seriesList.length; i++) {
+          seriesList[i].artist = artistResponse.data[i].name;
+        }
+        setSeriesData(seriesList);
         setIsLoading(false);
       } catch (error) {
         showErrorNotification(`Error fetching series: ${error}`);

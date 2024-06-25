@@ -49,3 +49,15 @@ export const updateArtist = async (id, artistData) => {
     throw error;
   }
 };
+
+export const fetchArtistNames = async (uuidsParam) => {
+  try {
+    const response = await axiosInstance.get(
+      `/artists/names?${uuidsParam.toString()}`
+    );
+    return response;
+  } catch (error) {
+    console.error(`Error fetching artist: ${error}`);
+    throw error;
+  }
+};

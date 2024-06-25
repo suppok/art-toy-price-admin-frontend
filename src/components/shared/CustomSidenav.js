@@ -35,11 +35,11 @@ const CustomSidenav = () => {
             </Nav.Item>
             <Nav.Item
               as={Link}
-              to="/character"
+              to="/item"
               icon={<PeoplesIcon />}
               className="nav-item"
             >
-              Character
+              Item
             </Nav.Item>
             <Nav.Item
               as={Link}

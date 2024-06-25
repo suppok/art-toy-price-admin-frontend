@@ -100,7 +100,7 @@ const ArtistDetail = () => {
 
   return (
     <div>
-      <h2 className="spacing-20px">Update Artist</h2>
+      <h2 className="spacing-20px">Artist Data</h2>
       <div>
         <Form
           fluid

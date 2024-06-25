@@ -59,3 +59,15 @@ export const updateCollection = async (id, collectionData) => {
     throw error;
   }
 };
+
+export const fetchCollectionNames = async (uuidsParam) => {
+  try {
+    const response = await axiosInstance.get(
+      `/collections/names?${uuidsParam.toString()}`
+    );
+    return response;
+  } catch (error) {
+    console.error(`Error fetching collection names: ${error}`);
+    throw error;
+  }
+};

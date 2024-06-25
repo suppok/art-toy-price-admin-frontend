@@ -10,6 +10,16 @@ export const deleteItem = async (id) => {
   }
 };
 
+export const fetchItems = async () => {
+  try {
+    const response = await axiosInstance.get(`/items`);
+    return response;
+  } catch (error) {
+    console.error(`Error fetching items: ${error}`);
+    throw error;
+  }
+}
+
 export const fetchItemsByCollection = async (id) => {
   try {
     const response = await axiosInstance.get(`/collections/${id}/items`);

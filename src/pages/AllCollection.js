@@ -8,7 +8,10 @@ import {
   showSuccessNotification,
   showErrorNotification,
 } from '../utils/Toaster';
-import { deleteCollection, fetchCollections } from '../services/CollectionService';
+import {
+  deleteCollection,
+  fetchCollections,
+} from '../services/CollectionService';
 import { fetchSeriesNames } from '../services/SeriesService';
 
 const { Column, HeaderCell, Cell } = Table;
@@ -22,13 +25,20 @@ const AllCollection = () => {
     const fetchData = async () => {
       try {
         const response = await fetchCollections();
-        const params = new URLSearchParams();
-        const seriesIdList = response.data.map((collection) => collection.series);
-        seriesIdList.forEach((uuid) => params.append('uuids', uuid));
-        const seriesNameResponse = await fetchSeriesNames(params);
-        const collectionList = response.data;
-        for (let i = 0; i < collectionList.length; i++) {
-          collectionList[i].series = seriesNameResponse.data[i].name;
+        let collectionList;
+        if (response.data.length > 0) {
+          const params = new URLSearchParams();
+          const seriesIdList = response.data.map(
+            (collection) => collection.series
+          );
+          seriesIdList.forEach((uuid) => params.append('uuids', uuid));
+          const seriesNameResponse = await fetchSeriesNames(params);
+          collectionList = response.data;
+          for (let i = 0; i < collectionList.length; i++) {
+            collectionList[i].series = seriesNameResponse.data[i].name;
+          }
+        } else {
+          collectionList = response.data;
         }
         setCollectionData(collectionList);
         setIsLoading(false);

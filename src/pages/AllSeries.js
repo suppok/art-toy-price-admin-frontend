@@ -22,13 +22,18 @@ const AllSeries = () => {
     const fetchData = async () => {
       try {
         const response = await fetchSeriesList();
-        const params = new URLSearchParams();
-        const artistIdList = response.data.map((series) => series.artist);
-        artistIdList.forEach((uuid) => params.append('uuids', uuid));
-        const artistResponse = await fetchArtistNames(params);
-        const seriesList = response.data;
-        for (let i = 0; i < seriesList.length; i++) {
-          seriesList[i].artist = artistResponse.data[i].name;
+        let seriesList;
+        if (response.data.length > 0) {
+          const params = new URLSearchParams();
+          const artistIdList = response.data.map((series) => series.artist);
+          artistIdList.forEach((uuid) => params.append('uuids', uuid));
+          const artistResponse = await fetchArtistNames(params);
+          seriesList = response.data;
+          for (let i = 0; i < seriesList.length; i++) {
+            seriesList[i].artist = artistResponse.data[i].name;
+          }
+        } else {
+          seriesList = response.data;
         }
         setSeriesData(seriesList);
         setIsLoading(false);

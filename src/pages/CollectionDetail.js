@@ -17,6 +17,7 @@ import {
 } from '../utils/Toaster';
 import DateCell from '../components/DateCell';
 import DeleteCell from '../components/DeleteCell';
+import BooleanCell from '../components/BooleanCell';
 import { fetchSeries, fetchSeriesByArtist } from '../services/SeriesService';
 import {
   deleteCollection,
@@ -242,9 +243,7 @@ const CollectionDetail = () => {
           </Column>
           <Column width={200}>
             <HeaderCell>Secret</HeaderCell>
-            <Cell dataKey="isSecret">
-              <Checkbox />
-            </Cell>
+            <BooleanCell dataKey="isSecret" />
           </Column>
           <Column width={500}>
             <HeaderCell>Create At</HeaderCell>

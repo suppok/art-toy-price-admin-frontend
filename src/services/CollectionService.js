@@ -52,7 +52,10 @@ export const fetchCollectionsBySeries = async (id) => {
 
 export const updateCollection = async (id, collectionData) => {
   try {
-    const response = await axiosInstance.put(`/collections/${id}`, collectionData);
+    const response = await axiosInstance.put(
+      `/collections/${id}`,
+      collectionData
+    );
     return response;
   } catch (error) {
     console.error(`Error updating collection: ${error}`);

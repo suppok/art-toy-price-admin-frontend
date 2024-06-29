@@ -4,6 +4,7 @@ import { Table, IconButton } from 'rsuite';
 import PlusIcon from '@rsuite/icons/legacy/Plus';
 import DateCell from '../components/DateCell';
 import DeleteCell from '../components/DeleteCell';
+import BooleanCell from '../components/BooleanCell';
 import {
   showSuccessNotification,
   showErrorNotification,
@@ -106,7 +107,7 @@ const AllItem = () => {
           </Column>
           <Column width={300}>
             <HeaderCell>Collection</HeaderCell>
-            <Cell dataKey="series" />
+            <Cell dataKey="collection" />
           </Column>
           <Column width={300}>
             <HeaderCell>Official Price</HeaderCell>
@@ -114,7 +115,7 @@ const AllItem = () => {
           </Column>
           <Column width={200}>
             <HeaderCell>Secret</HeaderCell>
-            <Cell dataKey="isSecret" />
+            <BooleanCell dataKey="isSecret" />
           </Column>
           <Column width={300}>
             <HeaderCell>Create At</HeaderCell>

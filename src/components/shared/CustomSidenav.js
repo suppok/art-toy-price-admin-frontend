@@ -2,6 +2,7 @@ import React from 'react';
 import { Sidenav, Nav } from 'rsuite';
 import { Link } from 'react-router-dom';
 import PeoplesIcon from '@rsuite/icons/legacy/Peoples';
+import PeopleSpeakerIcon from '@rsuite/icons/PeopleSpeaker';
 
 const CustomSidenav = () => {
   return (
@@ -44,7 +45,7 @@ const CustomSidenav = () => {
             <Nav.Item
               as={Link}
               to="/reseller"
-              icon={<PeoplesIcon />}
+              icon={<PeopleSpeakerIcon />}
               className="nav-item"
             >
               Reseller

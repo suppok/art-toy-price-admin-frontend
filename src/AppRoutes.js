@@ -15,7 +15,9 @@ import AllItem from './pages/AllItem';
 import AllReseller from './pages/AllReseller';
 import AllSale from './pages/AllSale';
 import CreateCollection from './pages/CreateCollection';
+import CreateReseller from './pages/CreateReseller';
 import CreateItem from './pages/CreateItem';
+import ResellerDetail from './pages/ResellerDetail';
 
 const AppRoutes = () => {
   return (
@@ -34,6 +36,8 @@ const AppRoutes = () => {
       <Route path="/item/:id" element={<ItemDetail />} />
       <Route path="/create-item" element={<CreateItem />} />
       <Route path="/reseller" element={<AllReseller />} />
+      <Route path="/reseller/:id" element={<ResellerDetail />} />
+      <Route path="/create-reseller" element={<CreateReseller />} />
       <Route path="/sale" element={<AllSale />} />
     </Routes>
   );

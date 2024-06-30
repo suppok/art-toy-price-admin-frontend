@@ -5,24 +5,24 @@ import {
   showSuccessNotification,
   showErrorNotification,
 } from '../utils/Toaster';
-import { createArtist } from '../services/ArtistService';
+import { createReseller } from '../services/ResellerService';
 
 const { StringType } = Schema.Types;
 const model = Schema.Model({
   name: StringType().isRequired('This field is required.'),
 });
 
-const CreateArtist = () => {
+const CreateReseller = () => {
   const [formValue, setFormValue] = useState({
     name: '',
   });
   const navigate = useNavigate();
   const handleSubmit = async () => {
     try {
-      const response = await createArtist(formValue);
+      const response = await createReseller(formValue);
       if (response.status === 200) {
         showSuccessNotification('Created successfully');
-        navigate(`/artist`);
+        navigate(`/reseller`);
       } else {
         showErrorNotification('Failed to create');
       }
@@ -33,7 +33,7 @@ const CreateArtist = () => {
 
   return (
     <div>
-      <h2 className="spacing-20px">Create Artist</h2>
+      <h2 className="spacing-20px">Create Reseller</h2>
       <div>
         <Form
           fluid
@@ -63,4 +63,4 @@ const CreateArtist = () => {
   );
 };
 
-export default CreateArtist;
+export default CreateReseller;
